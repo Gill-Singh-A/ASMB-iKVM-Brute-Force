@@ -142,6 +142,10 @@ if __name__ == "__main__":
         except:
             display('-', f"Error while Reading File {Back.YELLOW}{arguments.credentials}{Back.RESET}")
             exit(0)
+    arguments.scheme = arguments.scheme if arguments.scheme else scheme
+    arguments.timeout = float(arguments.timeout) if arguments.timeout else None
+    if not arguments.write:
+        arguments.write = f"{date.today()} {strftime('%H_%M_%S', localtime())}.csv"
     display('+', f"Total Servers     = {Back.MAGENTA}{len(arguments.server)}{Back.RESET}")
     display('+', f"Total Credentials = {Back.MAGENTA}{len(arguments.credentials)}{Back.RESET}")
     t1 = time()
