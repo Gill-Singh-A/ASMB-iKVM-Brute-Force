@@ -40,10 +40,10 @@ def login(server, username='admin', password='admin', scheme="http", timeout=Non
     try:
         headers["Host"] = server.split(':')[0]
         if BeautifulSoup(requests.get(f"{scheme}://{server}"), "html.parser").find("title").text.strip().lower() == "megarac sp":
-            response = requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}") if timeout == None else requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}", timeout=timeout)
+            response = requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}", verify=False) if timeout == None else requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}", timeout=timeout, verify=False)
             login_status = True if "fail" not in response.text.lower() else False
         else:
-            response = requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}") if timeout == None else requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}", timeout=timeout)
+            response = requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}", verify=False) if timeout == None else requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}", timeout=timeout, verify=False)
             login_status = True if response.status_code // 100 == 2 else False
         t2 = time()
         return login_status, t2-t1
