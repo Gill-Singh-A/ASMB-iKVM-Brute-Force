@@ -40,10 +40,10 @@ def login(server, username='admin', password='admin', scheme="http", timeout=Non
     try:
         headers["Host"] = server.split(':')[0]
         if BeautifulSoup(requests.get(f"{scheme}://{server}"), "html.parser").find("title").text.strip().lower() == "megarac sp":
-            response = requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}")
+            response = requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}") if timeout == None else requests.post(f"{scheme}://{server}/rpc/WEBSES/create.asp", headers=headers, data=f"WEBVAR_USERNAME={quote(username)}&WEBVAR_PASSWORD={quote(password)}", timeout=timeout)
             login_status = True if "fail" not in response.text.lower() else False
         else:
-            response = requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}")
+            response = requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}") if timeout == None else requests.post(f"{scheme}://{server}/api/session", headers=headers, data=f"username={quote(username)}&password={quote(password)}", timeout=timeout)
             login_status = True if response.status_code // 100 == 2 else False
         t2 = time()
         return login_status, t2-t1
@@ -142,3 +142,16 @@ if __name__ == "__main__":
         except:
             display('-', f"Error while Reading File {Back.YELLOW}{arguments.credentials}{Back.RESET}")
             exit(0)
+    display('+', f"Total Servers     = {Back.MAGENTA}{len(arguments.server)}{Back.RESET}")
+    display('+', f"Total Credentials = {Back.MAGENTA}{len(arguments.credentials)}{Back.RESET}")
+    t1 = time()
+    successful_logins = main(arguments.server, arguments.credentials, arguments.scheme, arguments.timeout)
+    t2 = time()
+    display(':', f"Successful Logins = {Back.MAGENTA}{len(successful_logins)}{Back.RESET}")
+    display(':', f"Time Taken        = {Back.MAGENTA}{t2-t1:.2f} seconds{Back.RESET}")
+    display(':', f"Rate              = {Back.MAGENTA}{len(arguments.credentials)/(t2-t1):.2f} logins / seconds{Back.RESET}")
+    display(':', f"Dumping Successful Logins to File {Back.MAGENTA}{arguments.write}{Back.RESET}")
+    with open(arguments.write, 'w') as file:
+        file.write(f"Server,User,Password\n")
+        file.write('\n'.join([f"{server},{user},{password}" for server, (user, password) in successful_logins.items()]))
+    display('+', f"Dumped Successful Logins to File {Back.MAGENTA}{arguments.write}{Back.RESET}") 
