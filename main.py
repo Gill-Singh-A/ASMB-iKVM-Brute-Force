@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 
 import requests, warnings
-from base64 import b64encode
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from datetime import date
